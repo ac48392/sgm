@@ -281,7 +281,7 @@ class thing : public entity
         std::unordered_set<attribute *> GetAttributes(bool bTopLevel=false) const;
 
         template<class ENTITY_POINTER>
-        class iterator : public std::iterator<std::output_iterator_tag, ENTITY_POINTER>
+        class iterator
             {
             SGM::EntityType m_type;
             std::map<size_t, entity *>::const_iterator m_iter;
@@ -289,6 +289,14 @@ class thing : public entity
             bool m_bTopLevel;
 
         public:
+            // std::iterator was deprecated in C++17; declare the standard
+            // iterator typedefs directly instead of inheriting them from it.
+            using iterator_category = std::output_iterator_tag;
+            using value_type = ENTITY_POINTER;
+            using difference_type = std::ptrdiff_t;
+            using pointer = ENTITY_POINTER *;
+            using reference = ENTITY_POINTER &;
+
             iterator(SGM::EntityType type, std::map<size_t, entity *> const &mAllEntities, bool bTopLevel = false);
 
             iterator(SGM::EntityType type, std::map<size_t, entity *>::const_iterator end, bool bTopLevel = false);

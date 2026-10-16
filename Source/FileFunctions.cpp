@@ -69,7 +69,7 @@ std::string GetDateAndTime(bool bGMT)
     int nMinute=TimeStruct.tm_min;
     int nSecond=TimeStruct.tm_sec;
 
-    char Buf[30];
+    char Buf[80];
     if(bGMT)
         {
         snprintf(Buf,sizeof(Buf),"%4d-%02d-%02d GMT %02d:%02d:%02d",nYear,nMonth,nDay,nHour,nMinute,nSecond);
