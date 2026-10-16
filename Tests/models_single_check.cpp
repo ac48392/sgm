@@ -105,6 +105,8 @@ TEST(repair, auto_match)
     std::vector<SGM::Entity> aEntities;
     std::vector<std::string> aLog;
     SGM::ReadFile(rResult,sFile,aEntities,aLog,SGM::TranslatorOptions());
+    ASSERT_EQ(rResult.GetResult(), SGM::ResultTypeOK);
+    ASSERT_GE(aEntities.size(), 2u);
 
     SGM::Body BodyID0=SGM::Body(aEntities[0].m_ID);
     SGM::Body BodyID1=SGM::Body(aEntities[1].m_ID);

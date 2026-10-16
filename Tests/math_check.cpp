@@ -2377,7 +2377,8 @@ TEST(math_check, cover_stl)
     options.m_bMerge=true;
     SGM::ReadFile(rResult, file_path, entities, log, options);
     auto resultType = rResult.GetResult();
-    EXPECT_EQ(resultType, SGM::ResultTypeOK);
+    ASSERT_EQ(resultType, SGM::ResultTypeOK);
+    ASSERT_FALSE(entities.empty());
 
     auto aComplexes = (std::vector<SGM::Complex> *) &entities;
     SGM::Complex ComplexID = aComplexes->front();
@@ -2413,7 +2414,8 @@ TEST(math_check, find_holes_stl)
     options.m_bMerge=true;
     SGM::ReadFile(rResult, file_path, entities, log, options);
     auto resultType = rResult.GetResult();
-    EXPECT_EQ(resultType, SGM::ResultTypeOK);
+    ASSERT_EQ(resultType, SGM::ResultTypeOK);
+    ASSERT_FALSE(entities.empty());
 
     auto aComplexes = (std::vector<SGM::Complex> *) &entities;
     SGM::Complex ComplexID = aComplexes->front();
