@@ -27,7 +27,7 @@ Goals and Capabilities
 * Support for the standard geometry format STEP and STL files.
 * A lightweight geometry viewer based on QT. 
 * Optimized multithreaded processing.
-* Written in standard C++11 for portability, builds on compilers including Windows MSVC, GCC, Clang, and Intel.
+* Written in standard C++17 for portability, builds on compilers including Windows MSVC, GCC, Clang, and Intel.
 * Around 95% unit test coverage of all library code.
 
 Building the Library
@@ -35,7 +35,7 @@ Building the Library
 
 ### Dependencies
 
-The `sgm` library can be built with a C++11 standard compliant compiler and has no dependencies on external libraries.
+The `sgm` library can be built with a C++17 standard compliant compiler and has no dependencies on external libraries.
 The lightweight viewer application requires the [QT](https://www.qt.io/) library and [OpenGL](https://en.wikipedia.org/wiki/OpenGL).
 Using the SGM build scripts requires [CMake](https://cmake.org/).
 
@@ -76,7 +76,7 @@ and if the variable has one, its default value.
 ### Linux Prerequisites
 
 * Ensure you have CMake.
-* Ensure you have a recent compiler with good support for C++11, we recommend GCC 7 or newer.
+* Ensure you have a recent compiler with good support for C++17, we recommend GCC 7 or newer.
 * To build the viewer application, ensure you have QT installed.
     
 ### Build on Linux or Mac

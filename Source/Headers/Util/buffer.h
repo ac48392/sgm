@@ -38,7 +38,7 @@ class buffer : private Alloc
 
 private:
 #if __cplusplus > 201402L
-    typedef std::allocator_traits<allocator_type>::is_always_equal allocator_is_always_equal;
+    typedef typename std::allocator_traits<Alloc>::is_always_equal allocator_is_always_equal;
 #else
     typedef std::false_type allocator_is_always_equal;
 #endif
