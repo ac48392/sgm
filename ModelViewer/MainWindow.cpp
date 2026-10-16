@@ -143,7 +143,7 @@ void MainWindow::file_open()
   type_filter += ";;" + tr("STL Files (%1)").arg("*.stl");
   type_filter += ";;" + tr("Step Files (%1)").arg("*.stp *.step");
   type_filter += ";;" + tr("Text Files (%1)").arg("*.txt");
-  type_filter += ";;" + tr("All files").arg("*.*");
+  type_filter += ";;" + tr("All files (%1)").arg("*.*");
 
   // Run the dialog
   QStringList files = QFileDialog::getOpenFileNames(
