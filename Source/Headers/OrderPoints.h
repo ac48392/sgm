@@ -66,6 +66,11 @@ void MergePoints(std::vector<SGM::Point3D> const &aPoints,             // unmerg
     {
     assert(aOldToNew.size() == aPoints.size());
 
+    if (aPoints.empty())
+        {
+        return;
+        }
+
     // Find index order of points sorted by Z-order (Morton order)
     buffer<unsigned> aIndexOrdered = OrderPointsLexicographical(aPoints);
 
