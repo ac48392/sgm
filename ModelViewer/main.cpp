@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QSurfaceFormat>
 #include <QFont>
+#include <QMetaObject>
 #include <iostream>
 
 #include "MainWindow.hpp"
@@ -49,7 +50,7 @@ void PrintVersion()
 void PrintUsage(std::string sExecutableName)
     {
     std::cerr << "usage: " << std::endl;
-    std::cerr << "    " << sExecutableName << " [-c] [FILE [FILE ...]]" << std::endl;
+    std::cerr << "    " << sExecutableName << " [-c] [-l FILE [FILE ...]] [FILE [FILE ...]]" << std::endl;
     }
 
 // print longer help message
@@ -61,6 +62,7 @@ void PrintHelp(std::string sExecutableName)
     std::cerr << std::endl;
     std::cerr << "     -c --cover      read STL file and output an STL file with coordinate aligned planar gaps covered." << std::endl;
     std::cerr << "     -f --factures   read STL file and output an SGM file of the factures in a scaned sheet." << std::endl;
+    std::cerr << "     -l --load       headlessly load each FILE via SGM::ReadFile and report OK/FAILED per file (no GUI)." << std::endl;
     }
 
 void FindFractures(int argc, char **argv)
@@ -142,6 +144,83 @@ void CoverSTL(int argc, char **argv)
     SGM::SaveSTL(rResult, OutputSTLFile, AnswerID, Options);
     }
 
+// Headlessly load each FILE via SGM::ReadFile (no Qt/GUI) and report OK/FAILED
+// per file, mirroring the per-format options MainWindow/ModelData apply when
+// opening a file interactively (e.g. STL triangle merging).
+// Returns 0 if every file loaded without error, 1 otherwise.
+
+int ValidateFiles(int argc, char **argv)
+    {
+    if (argc < 3)
+        {
+        std::cerr << "error: no files given to load" << std::endl;
+        PrintUsage(GetExecutableName(argv[0]));
+        return 1;
+        }
+
+    int nFailed = 0;
+    int nTotal = argc - 2;
+
+    for (int i = 2; i < argc; ++i)
+        {
+        std::string sFile(argv[i]);
+
+        std::vector<SGM::Entity> aEntities;
+        std::vector<std::string> aLog;
+        SGM::TranslatorOptions Options;
+        if (SGM::GetFileType(sFile) == SGM::STLFileType)
+            {
+            Options.m_bMerge = true;
+            }
+
+        bool bOK = false;
+        bool bThrew = false;
+        std::string sMessage;
+
+        try
+            {
+            SGMInternal::thing *pThing = SGM::CreateThing();
+            SGM::Result rResult(pThing);
+            SGM::ReadFile(rResult, sFile, aEntities, aLog, Options);
+            bOK = (rResult.GetResult() == SGM::ResultTypeOK);
+            sMessage = rResult.Message();
+            }
+        catch (std::exception const &e)
+            {
+            bThrew = true;
+            sMessage = e.what();
+            }
+        catch (...)
+            {
+            bThrew = true;
+            sMessage = "unknown non-std::exception thrown";
+            }
+
+        if (!bOK)
+            {
+            ++nFailed;
+            }
+
+        std::cout << (bOK ? "OK      " : (bThrew ? "THREW   " : "FAILED  "))
+                   << sFile << "  (entities=" << aEntities.size() << ")";
+        if (!bOK)
+            {
+            std::cout << "  -- " << sMessage;
+            }
+        std::cout << std::endl;
+        }
+
+    std::cout << std::endl << (nTotal - nFailed) << "/" << nTotal
+               << " files loaded OK";
+    if (nFailed > 0)
+        {
+        std::cout << ", " << nFailed << " FAILED";
+        }
+    std::cout << std::endl;
+
+    return nFailed > 0 ? 1 : 0;
+    }
+
 // return false if we are not done processing and should go on to the QtApp
 
 bool RunFromCommandLine(int argc, char **argv)
@@ -180,9 +259,13 @@ bool RunFromCommandLine(int argc, char **argv)
             {
             CoverSTL(argc, argv);
             }
-        else if (strcmp(argv[2], "--fractures") == 0 || strcmp(argv[1], "-f") == 0)
+        else if (strcmp(argv[1], "--fractures") == 0 || strcmp(argv[1], "-f") == 0)
             {
             FindFractures(argc, argv);
+            }
+        else if (strcmp(argv[1], "--load") == 0 || strcmp(argv[1], "-l") == 0)
+            {
+            exit(ValidateFiles(argc, argv));
             }
         else
             {
@@ -233,6 +316,15 @@ int main(int argc, char **argv)
     //new_font.setWeight( int ** ); //your option
     app.setFont( new_font );     // Run the application
 #endif
+
+    // Open any file arguments given on the command line (usage advertises
+    // this; file_open_recent is private, so invoke it through the
+    // meta-object system rather than widening the class's public interface).
+    for (int i = 1; i < argc; ++i)
+        {
+        QMetaObject::invokeMethod(&mw, "file_open_recent",
+                                   Q_ARG(QString, QString::fromUtf8(argv[i])));
+        }
 
     return QApplication::exec();
     }
