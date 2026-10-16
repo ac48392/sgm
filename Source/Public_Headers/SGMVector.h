@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <iosfwd>
 #include <vector>
 
 #include "sgm_export.h"
