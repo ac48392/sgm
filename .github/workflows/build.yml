@@ -12,14 +12,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Intel oneAPI C++ Compiler (2025)
+        run: |
+          wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+            | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+            | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp
+
       - name: Configure
         run: |
+          source /opt/intel/oneapi/setvars.sh
           mkdir build
           cd build
-          cmake .. -DBUILD_SGM_TESTS=ON
+          cmake .. -DBUILD_SGM_TESTS=ON -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx
 
       - name: Build
-        run: cmake --build build -j "$(nproc)"
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          cmake --build build -j "$(nproc)"
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          ctest --test-dir build --output-on-failure
