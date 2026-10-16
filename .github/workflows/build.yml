@@ -1,0 +1,25 @@
+name: Build and Test
+
+on:
+  push:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_SGM_TESTS=ON
+
+      - name: Build
+        run: cmake --build build -j "$(nproc)"
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

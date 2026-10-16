@@ -113,6 +113,7 @@ add_subdirectory(Source)
 
 option(BUILD_SGM_TESTS "Build the SGM test executable." OFF)
 if(BUILD_SGM_TESTS)
+  enable_testing()
   add_subdirectory(Tests)
   add_subdirectory(Tests/lib/googletest-release-1.8.0)
 endif()
